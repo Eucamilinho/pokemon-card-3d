@@ -139,11 +139,17 @@ class CardApp {
   onPointerDown(e) {
     if (e.target.closest('.ui-container') || e.target.closest('.btn-menu-toggle')) return;
     this.isDragging = true;
+    this.dragStartPos = { x: e.clientX, y: e.clientY };
+    this.dragStartTime = performance.now();
     this.previousPointerPos = { x: e.clientX, y: e.clientY };
+
+    if (this.canvas.setPointerCapture && e.pointerId !== undefined) {
+      try { this.canvas.setPointerCapture(e.pointerId); } catch (err) {}
+    }
   }
 
   onPointerMove(e) {
-    // Normalized pointer coordinates (-1 to 1) from screen center
+    // Coordenadas normalizadas (-1 a 1) para los reflejos holográficos
     const nx = (e.clientX / window.innerWidth) * 2 - 1;
     const ny = -(e.clientY / window.innerHeight) * 2 + 1;
 
@@ -154,17 +160,33 @@ class CardApp {
       const deltaX = e.clientX - this.previousPointerPos.x;
       const deltaY = e.clientY - this.previousPointerPos.y;
 
-      this.targetDragRotation.y += deltaX * 0.008;
-      this.targetDragRotation.x += deltaY * 0.008;
+      // Sensibilidad optimizada para pantallas táctiles y escritorio
+      const isTouch = e.pointerType === 'touch' || ('ontouchstart' in window);
+      const sensitivity = isTouch ? 0.013 : 0.009;
 
-      // Clamp vertical drag rotation to prevent getting upside down disorientation
+      this.targetDragRotation.y += deltaX * sensitivity;
+      this.targetDragRotation.x += deltaY * sensitivity;
+
+      // Limitar inclinación vertical para no voltear de cabeza
       this.targetDragRotation.x = Math.max(-Math.PI * 0.45, Math.min(Math.PI * 0.45, this.targetDragRotation.x));
 
       this.previousPointerPos = { x: e.clientX, y: e.clientY };
     }
   }
 
-  onPointerUp() {
+  onPointerUp(e) {
+    if (this.isDragging && e && this.dragStartPos) {
+      // Detección de tap rápido en móviles: toque sin arrastre voltea la carta
+      const dist = Math.hypot(e.clientX - this.dragStartPos.x, e.clientY - this.dragStartPos.y);
+      const timeDiff = performance.now() - this.dragStartTime;
+      if (dist < 15 && timeDiff < 280) {
+        this.flipCard();
+      }
+
+      if (this.canvas.releasePointerCapture && e.pointerId !== undefined) {
+        try { this.canvas.releasePointerCapture(e.pointerId); } catch (err) {}
+      }
+    }
     this.isDragging = false;
   }
 
@@ -252,9 +274,11 @@ class CardApp {
 
     this.camera.aspect = width / height;
     
-    // Adjust camera distance for mobile screens so card is always well framed
-    if (width < 600) {
-      this.camera.position.z = 13.5;
+    // Ajuste dinámico de distancia de cámara según proporción de pantalla
+    if (this.camera.aspect < 0.7) {
+      this.camera.position.z = 14.2;
+    } else if (this.camera.aspect < 1.0) {
+      this.camera.position.z = 13.0;
     } else {
       this.camera.position.z = 11.2;
     }
