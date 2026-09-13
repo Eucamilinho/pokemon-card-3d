@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Pokémon 3D - Holographic Card</title>
+  <link rel="icon" type="image/png" href="./assets/mega_gengar_ex.png">
+  <script type="module" crossorigin src="./assets/index-BUE8dlJW.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BIiFq7OW.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 3D Canvas -->
+    <canvas id="webgl-canvas"></canvas>
+
+    <!-- Botón único para desplegar/ocultar el menú -->
+    <button id="btn-toggle-menu" class="btn-menu-toggle" aria-label="Abrir menú" title="Menú de opciones">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" y1="21" x2="4" y2="14"></line>
+        <line x1="4" y1="10" x2="4" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="12"></line>
+        <line x1="12" y1="8" x2="12" y2="3"></line>
+        <line x1="20" y1="21" x2="20" y2="16"></line>
+        <line x1="20" y1="12" x2="20" y2="3"></line>
+        <line x1="1" y1="14" x2="7" y2="14"></line>
+        <line x1="9" y1="8" x2="15" y2="8"></line>
+        <line x1="17" y1="16" x2="23" y2="16"></line>
+      </svg>
+      <span>Opciones</span>
+    </button>
+
+    <!-- Menú de controles desplegable -->
+    <nav id="ui-menu" class="ui-container collapsed">
+      <div class="control-group">
+        <button id="btn-flip" class="btn primary" title="Voltear carta (Espacio)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+          </svg>
+          Voltear
+        </button>
+
+        <button id="btn-auto" class="btn" title="Activar/Desactivar rotación continua">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polygon points="10 8 16 12 10 16 10 8"/>
+          </svg>
+          Auto
+        </button>
+
+        <button id="btn-reset" class="btn" title="Centrar carta">
+          Reiniciar
+        </button>
+      </div>
+
+      <div class="control-group">
+        <div class="select-wrapper">
+          <select id="select-card" title="Selecciona la carta">
+            <option value="/assets/mega_gengar_ex.png" selected>Mega Gengar EX</option>
+            <option value="/assets/mega_gengar_shiny.png">Mega Gengar EX (Shiny Secret)</option>
+            <option value="/assets/charmander_base.png">Charmander - Base Set (1999)</option>
+            <option value="/assets/charmander_shiny.png">Charmander - Shiny Vault</option>
+            <option value="/assets/charmander_hiddenfates.png">Charmander - Hidden Fates</option>
+          </select>
+        </div>
+
+        <div class="select-wrapper">
+          <select id="select-style" title="Estilo de brillo holográfico">
+            <option value="0">Foil Cosmos (Galaxy)</option>
+            <option value="1">Rainbow Secret Rare</option>
+            <option value="2">Clásico Metálico</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="slider-container">
+        <label for="slider-intensity">Brillo:</label>
+        <input type="range" id="slider-intensity" min="0" max="2" step="0.05" value="0.85">
+      </div>
+    </nav>
+  </div>
+
+  <script>
+    if (window.location.protocol === 'file:') {
+      const warning = document.createElement('div');
+      warning.style.cssText = 'position:fixed;top:30px;left:50%;transform:translateX(-50%);background:rgba(230,57,70,0.95);backdrop-filter:blur(10px);color:#fff;padding:16px 24px;border-radius:14px;font-family:sans-serif;font-size:14px;z-index:9999;box-shadow:0 12px 35px rgba(0,0,0,0.6);text-align:center;max-width:90vw;line-height:1.6;border:1px solid rgba(255,255,255,0.2);';
+      warning.innerHTML = '<strong>⚠️ Estás abriendo el archivo directamente desde tu disco (file://)</strong><br>Los navegadores modernos (Chrome, Edge, Firefox) bloquean los scripts 3D y texturas WebGL locales por seguridad (CORS).<br>👉 Abre en tu navegador la dirección local del servidor: <br><a href="http://localhost:5173" style="color:#ffeb3b;font-weight:bold;text-decoration:underline;font-size:15px;">http://localhost:5173</a>';
+      document.body.appendChild(warning);
+    }
+  </script>
+</body>
+</html>
