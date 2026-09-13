@@ -311,7 +311,11 @@ class CardApp {
   }
 }
 
-// Initialize when DOM is ready
-window.addEventListener('DOMContentLoaded', () => {
+// Initialize reliably
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    new CardApp();
+  });
+} else {
   new CardApp();
-});
+}
